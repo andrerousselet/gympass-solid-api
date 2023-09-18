@@ -1,14 +1,19 @@
-import { expect, describe, it } from "vitest";
+import { expect, describe, it, beforeEach } from "vitest";
 import { InMemoryUsersRepository } from "@/repositories/in-memory/in-memory-users-reporitory";
 import { AuthenticateUseCase } from "./authenticate";
 import { hash } from "bcryptjs";
 import { InvalidCredentialsError } from "./errors/invalid-credentials-error";
 
-describe("Authenticate use case", () => {
-  it("should be able to authenticate", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository); // System Under Test: avoid name errors when copying/pasting
+let inMemoryUsersRepository: InMemoryUsersRepository;
+let sut: AuthenticateUseCase;
 
+describe("Authenticate use case", () => {
+  beforeEach(() => {
+    inMemoryUsersRepository = new InMemoryUsersRepository();
+    sut = new AuthenticateUseCase(inMemoryUsersRepository);
+  });
+
+  it("should be able to authenticate", async () => {
     await inMemoryUsersRepository.create({
       name: "Fulano Silva",
       email: "fulanosilva@email.com",
@@ -24,9 +29,6 @@ describe("Authenticate use case", () => {
   });
 
   it("should not be able to authenticate with wrong email", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository); // System Under Test: avoid name errors when copying/pasting
-
     expect(() =>
       sut.execute({
         email: "fulano@email.com",
@@ -36,9 +38,6 @@ describe("Authenticate use case", () => {
   });
 
   it("should not be able to authenticate with wrong password", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository); // System Under Test: avoid name errors when copying/pasting
-
     await inMemoryUsersRepository.create({
       name: "Fulano Silva",
       email: "fulanosilva@email.com",
