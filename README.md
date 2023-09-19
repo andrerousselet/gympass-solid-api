@@ -9,7 +9,7 @@
 - [ ] Deve ser possível obter o seu histórico de check-ins;
 - [ ] Deve ser possível buscar academias próximas;
 - [ ] Deve ser possível buscar academias pelo nome;
-- [ ] Deve ser possível realizar check-in em uma academia;
+- [x] Deve ser possível realizar check-in em uma academia;
 - [ ] Deve ser possível validar o check-in de um usuário;
 - [ ] Deve ser possível cadastrar uma academia;
 
