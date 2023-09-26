@@ -1,15 +1,30 @@
-import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { CheckInUseCase } from "./check-in";
 import { randomUUID } from "node:crypto";
+import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
+import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
+import { Decimal } from "@prisma/client/runtime/library";
 
 let inMemoryCheckInsRepository: InMemoryCheckInsRepository;
+let inMemoryGymsRepository: InMemoryGymsRepository;
 let sut: CheckInUseCase;
 
 describe("Check-in use case", () => {
   beforeEach(() => {
     inMemoryCheckInsRepository = new InMemoryCheckInsRepository();
-    sut = new CheckInUseCase(inMemoryCheckInsRepository);
+    inMemoryGymsRepository = new InMemoryGymsRepository();
+    sut = new CheckInUseCase(
+      inMemoryCheckInsRepository,
+      inMemoryGymsRepository,
+    );
+    inMemoryGymsRepository.items.push({
+      id: randomUUID(),
+      title: "The Gym",
+      description: "The Gym description",
+      phone: "",
+      latitude: new Decimal(0),
+      longitude: new Decimal(0),
+    });
     vi.useFakeTimers();
   });
 
@@ -20,7 +35,9 @@ describe("Check-in use case", () => {
   it("should be able to check in", async () => {
     const { checkIn } = await sut.execute({
       userId: randomUUID(),
-      gymId: randomUUID(),
+      gymId: inMemoryGymsRepository.items[0].id,
+      userLatitude: -22.9438099,
+      userLongitude: -43.1956681,
     });
     expect(checkIn.id).toEqual(expect.any(String));
   });
@@ -30,7 +47,9 @@ describe("Check-in use case", () => {
 
     const fakeCheckIn = {
       userId: randomUUID(),
-      gymId: randomUUID(),
+      gymId: inMemoryGymsRepository.items[0].id,
+      userLatitude: -22.9438099,
+      userLongitude: -43.1956681,
     };
 
     await sut.execute(fakeCheckIn);
@@ -43,7 +62,9 @@ describe("Check-in use case", () => {
 
     const fakeCheckIn = {
       userId: randomUUID(),
-      gymId: randomUUID(),
+      gymId: inMemoryGymsRepository.items[0].id,
+      userLatitude: -22.9438099,
+      userLongitude: -43.1956681,
     };
 
     await sut.execute(fakeCheckIn);
