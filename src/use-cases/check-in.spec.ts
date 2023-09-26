@@ -28,16 +28,30 @@ describe("Check-in use case", () => {
   it("should not be able to check in more than once in the same day", async () => {
     vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0));
 
-    await sut.execute({
+    const fakeCheckIn = {
       userId: randomUUID(),
       gymId: randomUUID(),
-    });
+    };
 
-    await expect(() =>
-      sut.execute({
-        userId: randomUUID(),
-        gymId: randomUUID(),
-      }),
-    ).rejects.toBeInstanceOf(Error);
+    await sut.execute(fakeCheckIn);
+
+    await expect(() => sut.execute(fakeCheckIn)).rejects.toBeInstanceOf(Error);
+  });
+
+  it("should be able to check in more than once in different days", async () => {
+    vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0));
+
+    const fakeCheckIn = {
+      userId: randomUUID(),
+      gymId: randomUUID(),
+    };
+
+    await sut.execute(fakeCheckIn);
+
+    vi.setSystemTime(new Date(2022, 0, 21, 8, 0, 0));
+
+    const { checkIn } = await sut.execute(fakeCheckIn);
+
+    expect(checkIn.id).toEqual(expect.any(String));
   });
 });
