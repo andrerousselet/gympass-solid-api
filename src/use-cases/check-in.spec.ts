@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { CheckInUseCase } from "./check-in";
-import { randomUUID } from "node:crypto";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
 import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
 import { MaxDistanceError } from "./errors/max-distance-error";
@@ -19,7 +18,7 @@ describe("Check-in use case", () => {
       inMemoryGymsRepository,
     );
     await inMemoryGymsRepository.create({
-      id: "test-gym-1",
+      id: "gym_01",
       title: "The Gym",
       description: "The Gym description",
       phone: "",
@@ -35,8 +34,8 @@ describe("Check-in use case", () => {
 
   it("should be able to check in", async () => {
     const { checkIn } = await sut.execute({
-      userId: randomUUID(),
-      gymId: "test-gym-1",
+      userId: "user_01",
+      gymId: "gym_01",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     });
@@ -47,8 +46,8 @@ describe("Check-in use case", () => {
     vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0));
 
     const fakeCheckIn = {
-      userId: randomUUID(),
-      gymId: "test-gym-1",
+      userId: "user_01",
+      gymId: "gym_01",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     };
@@ -64,8 +63,8 @@ describe("Check-in use case", () => {
     vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0));
 
     const fakeCheckIn = {
-      userId: randomUUID(),
-      gymId: "test-gym-1",
+      userId: "user_01",
+      gymId: "gym_01",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     };
@@ -82,8 +81,8 @@ describe("Check-in use case", () => {
   it("should not be able to check in on distant gym", async () => {
     await expect(() =>
       sut.execute({
-        userId: randomUUID(),
-        gymId: "test-gym-1",
+        userId: "user_01",
+        gymId: "gym_01",
         userLatitude: -22.9347785,
         userLongitude: -43.2019226,
       }),
