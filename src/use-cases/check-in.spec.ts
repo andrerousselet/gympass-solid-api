@@ -3,27 +3,26 @@ import { CheckInUseCase } from "./check-in";
 import { randomUUID } from "node:crypto";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
 import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
-import { Decimal } from "@prisma/client/runtime/library";
 
 let inMemoryCheckInsRepository: InMemoryCheckInsRepository;
 let inMemoryGymsRepository: InMemoryGymsRepository;
 let sut: CheckInUseCase;
 
 describe("Check-in use case", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     inMemoryCheckInsRepository = new InMemoryCheckInsRepository();
     inMemoryGymsRepository = new InMemoryGymsRepository();
     sut = new CheckInUseCase(
       inMemoryCheckInsRepository,
       inMemoryGymsRepository,
     );
-    inMemoryGymsRepository.items.push({
-      id: randomUUID(),
+    await inMemoryGymsRepository.create({
+      id: "test-gym-1",
       title: "The Gym",
       description: "The Gym description",
       phone: "",
-      latitude: new Decimal(-22.9438099),
-      longitude: new Decimal(-43.1956681),
+      latitude: -22.9438099,
+      longitude: -43.1956681,
     });
     vi.useFakeTimers();
   });
@@ -35,7 +34,7 @@ describe("Check-in use case", () => {
   it("should be able to check in", async () => {
     const { checkIn } = await sut.execute({
       userId: randomUUID(),
-      gymId: inMemoryGymsRepository.items[0].id,
+      gymId: "test-gym-1",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     });
@@ -47,7 +46,7 @@ describe("Check-in use case", () => {
 
     const fakeCheckIn = {
       userId: randomUUID(),
-      gymId: inMemoryGymsRepository.items[0].id,
+      gymId: "test-gym-1",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     };
@@ -62,7 +61,7 @@ describe("Check-in use case", () => {
 
     const fakeCheckIn = {
       userId: randomUUID(),
-      gymId: inMemoryGymsRepository.items[0].id,
+      gymId: "test-gym-1",
       userLatitude: -22.9438099,
       userLongitude: -43.1956681,
     };
@@ -80,7 +79,7 @@ describe("Check-in use case", () => {
     await expect(() =>
       sut.execute({
         userId: randomUUID(),
-        gymId: inMemoryGymsRepository.items[0].id,
+        gymId: "test-gym-1",
         userLatitude: -22.9347785,
         userLongitude: -43.2019226,
       }),
