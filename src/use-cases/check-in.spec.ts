@@ -3,6 +3,8 @@ import { CheckInUseCase } from "./check-in";
 import { randomUUID } from "node:crypto";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
 import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
+import { MaxDistanceError } from "./errors/max-distance-error";
+import { MaxCheckInsError } from "./errors/max-check-ins-error";
 
 let inMemoryCheckInsRepository: InMemoryCheckInsRepository;
 let inMemoryGymsRepository: InMemoryGymsRepository;
@@ -53,7 +55,9 @@ describe("Check-in use case", () => {
 
     await sut.execute(fakeCheckIn);
 
-    await expect(() => sut.execute(fakeCheckIn)).rejects.toBeInstanceOf(Error);
+    await expect(() => sut.execute(fakeCheckIn)).rejects.toBeInstanceOf(
+      MaxCheckInsError,
+    );
   });
 
   it("should be able to check in more than once in different days", async () => {
@@ -83,6 +87,6 @@ describe("Check-in use case", () => {
         userLatitude: -22.9347785,
         userLongitude: -43.2019226,
       }),
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
