@@ -10,11 +10,11 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     const startOfTheDay = dayjs(date).startOf("date");
     const endOfTheDay = dayjs(date).endOf("date");
 
-    const checkInOnSameDate = this.items.find((checkIn) => {
-      const checkInDate = dayjs(checkIn.created_at);
+    const checkInOnSameDate = this.items.find((item) => {
+      const checkInDate = dayjs(item.created_at);
       const isOnSameDate =
         checkInDate.isAfter(startOfTheDay) && checkInDate.isBefore(endOfTheDay);
-      return checkIn.user_id === userId && isOnSameDate;
+      return item.user_id === userId && isOnSameDate;
     });
 
     if (!checkInOnSameDate) return null;
@@ -22,15 +22,19 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     return checkInOnSameDate;
   }
 
+  async findManyById(userId: string) {
+    return this.items.filter((item) => item.user_id === userId);
+  }
+
   async create(data: Prisma.CheckInUncheckedCreateInput) {
-    const checkin = {
+    const checkIn = {
       id: randomUUID(),
       user_id: data.user_id,
       gym_id: data.gym_id,
       validated_at: data.validated_at ? new Date(data.validated_at) : null,
       created_at: new Date(),
     };
-    this.items.push(checkin);
-    return checkin;
+    this.items.push(checkIn);
+    return checkIn;
   }
 }
