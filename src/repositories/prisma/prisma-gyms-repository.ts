@@ -19,7 +19,7 @@ export class PrismaGymsRepository implements GymsRepository {
   async searchMany(query: string, page: number) {
     const gyms = await prisma.gym.findMany({
       where: {
-        title: { contains: query },
+        title: { contains: query, mode: "insensitive" },
       },
       take: 20,
       skip: (page - 1) * 20,
